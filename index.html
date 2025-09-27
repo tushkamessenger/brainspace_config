@@ -20,12 +20,14 @@
     padding: 30px 40px;
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    width: 400px;
+    width: 500px;
     text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   h1 {
-    font-size: 20px;
+    font-size: 22px;
     margin-bottom: 15px;
     color: #333;
   }
@@ -35,21 +37,51 @@
     font-weight: bold;
     padding: 10px;
     border-radius: 8px;
+    margin-bottom: 20px;
   }
 
   .ok { color: green; }
   .update { color: red; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 6px;
+  }
+  th {
+    background: #f0f0f0;
+  }
+  .footer {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #444;
+  }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>BrainSpace Status</h1>
   <div id="status" class="status">⏳ Lade Status...</div>
+
+  <h2>Verlauf</h2>
+  <table id="history">
+    <tr><th>Zeit</th><th>Status</th></tr>
+  </table>
+
+  <div class="footer">
+    Kontakt: <a href="mailto:anowe.media@gmail.com">anowe.media@gmail.com</a>
+  </div>
 </div>
 
 <script>
 async function loadStatus() {
   try {
+    // Status.json laden
     const res = await fetch("https://tushkamessenger.github.io/brainspace_config/status.json");
     const data = await res.json();
 
@@ -61,14 +93,33 @@ async function loadStatus() {
       statusDiv.textContent = "✅ Alles in Ordnung";
       statusDiv.className = "status ok";
     }
+
+    // Verlauf aus time.json laden
+    const timeRes = await fetch("https://tushkamessenger.github.io/brainspace_config/time.json");
+    const history = await timeRes.json();
+
+    const table = document.getElementById("history");
+    table.innerHTML = "<tr><th>Zeit</th><th>Status</th></tr>";
+
+    history.forEach(entry => {
+      const row = document.createElement("tr");
+      const tdTime = document.createElement("td");
+      tdTime.textContent = entry.time;
+      const tdStatus = document.createElement("td");
+      tdStatus.textContent = entry.update ? "Update" : "Normal";
+      tdStatus.style.color = entry.update ? "red" : "green";
+      row.appendChild(tdTime);
+      row.appendChild(tdStatus);
+      table.appendChild(row);
+    });
+
   } catch (e) {
     document.getElementById("status").textContent = "❌ Fehler beim Laden!";
   }
 }
 
 loadStatus();
-setInterval(loadStatus, 30000); // обновление каждые 30 секунд
+setInterval(loadStatus, 30000); // alle 30 Sek. aktualisieren
 </script>
 </body>
 </html>
-
