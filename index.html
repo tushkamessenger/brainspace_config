@@ -86,8 +86,8 @@ async function loadStatus() {
     const data = await res.json();
 
     const statusDiv = document.getElementById("status");
-    if (data.update) {
-      statusDiv.textContent = "⚠️ Update läuft!";
+    if (data.update == true) {
+      statusDiv.textContent = "⚠️ Brainspace funktioniert nicht!";
       statusDiv.className = "status update";
     } else {
       statusDiv.textContent = "✅ Alles in Ordnung";
