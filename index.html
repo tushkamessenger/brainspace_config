@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>BrainSpace -- Status</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    width: 400px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .status {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .ok { color: green; }
+  .update { color: red; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>BrainSpace Status</h1>
+  <div id="status" class="status">⏳ Lade Status...</div>
+</div>
+
+<script>
+async function loadStatus() {
+  try {
+    const res = await fetch("https://tushkamessenger.github.io/brainspace_status/status.json");
+    const data = await res.json();
+
+    const statusDiv = document.getElementById("status");
+    if (data.update) {
+      statusDiv.textContent = "⚠️ Update läuft!";
+      statusDiv.className = "status update";
+    } else {
+      statusDiv.textContent = "✅ Alles in Ordnung";
+      statusDiv.className = "status ok";
+    }
+  } catch (e) {
+    document.getElementById("status").textContent = "❌ Fehler beim Laden!";
+  }
+}
+
+loadStatus();
+setInterval(loadStatus, 30000); // обновление каждые 30 секунд
+</script>
+</body>
+</html>
