@@ -50,7 +50,7 @@
 <script>
 async function loadStatus() {
   try {
-    const res = await fetch("https://tushkamessenger.github.io/brainspace_status/status.json");
+    const res = await fetch("https://tushkamessenger.github.io/brainspace_config/status.json");
     const data = await res.json();
 
     const statusDiv = document.getElementById("status");
@@ -71,3 +71,4 @@ setInterval(loadStatus, 30000); // обновление каждые 30 секу
 </script>
 </body>
 </html>
+
