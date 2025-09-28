@@ -35,13 +35,30 @@
   .status {
     font-size: 18px;
     font-weight: bold;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    display: inline-block;
+    min-width: 200px;
   }
 
-  .ok { color: green; }
-  .update { color: red; }
+  .ok { background: #e8f9e8; color: #2e7d32; }
+  .update { background: #fff3e0; color: #e65100; }
+  .error { background: #ffebee; color: #c62828; }
+
+  .info-box {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f7f7f7;
+    font-size: 14px;
+    color: #444;
+    text-align: left;
+  }
+
+  .info-box strong {
+    color: #222;
+  }
 
   table {
     width: 100%;
@@ -56,6 +73,7 @@
   th {
     background: #f0f0f0;
   }
+
   .footer {
     margin-top: 20px;
     font-size: 13px;
@@ -67,6 +85,11 @@
 <div class="container">
   <h1>BrainSpace Status</h1>
   <div id="status" class="status">⏳ Lade Status...</div>
+
+  <div id="details" class="info-box" style="display:none;">
+    <p><strong>Version:</strong> <span id="version">-</span></p>
+    <p><strong>Nachricht:</strong> <span id="message">-</span></p>
+  </div>
 
   <h2>Verlauf</h2>
   <table id="history">
@@ -86,13 +109,31 @@ async function loadStatus() {
     const data = await res.json();
 
     const statusDiv = document.getElementById("status");
-    if (data.update == true) {
-      statusDiv.textContent = "⚠️ Brainspace funktioniert nicht!";
-      statusDiv.className = "status update";
+    const versionSpan = document.getElementById("version");
+    const messageSpan = document.getElementById("message");
+    const detailsBox = document.getElementById("details");
+
+    let text = "";
+    let cls = "";
+
+    if (data.updating) {
+      text = "🔄 BrainSpace wird aktualisiert...";
+      cls = "status update";
+    } else if (!data.working) {
+      text = "⚠️ BrainSpace funktioniert nicht!";
+      cls = "status error";
     } else {
-      statusDiv.textContent = "✅ Alles in Ordnung";
-      statusDiv.className = "status ok";
+      text = "✅ Alles in Ordnung";
+      cls = "status ok";
     }
+
+    statusDiv.textContent = text;
+    statusDiv.className = cls;
+
+    // Details einblenden
+    versionSpan.textContent = data.update || "-";
+    messageSpan.textContent = data.message || "-";
+    detailsBox.style.display = "block";
 
     // Verlauf aus time.json laden
     const timeRes = await fetch("https://tushkamessenger.github.io/brainspace_config/time.json");
@@ -115,6 +156,7 @@ async function loadStatus() {
 
   } catch (e) {
     document.getElementById("status").textContent = "❌ Fehler beim Laden!";
+    document.getElementById("status").className = "status error";
   }
 }
 
