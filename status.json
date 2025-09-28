@@ -1,4 +1,7 @@
 {
-  "update": true
+  "working": false,
+  "update": "0.9",
+  "updating": false,
+  "message": "brainspace is not working"
 }
 
